@@ -4,6 +4,8 @@ using SafeVault.Models;
 
 namespace SafeVault.Controllers;
 
+
+
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
@@ -13,6 +15,24 @@ public class HomeController : Controller
     {
         _userDataHandler = handler;
         _logger = logger;
+    }
+
+    private void RegisterUser(string username, string plaintextPassword)
+    {
+        // When registering: Hash and store the password.
+        string secureHash = SecurePasswordHasher.HashPassword(plaintextPassword);
+
+        // In a real application, you would save 'secureHash' to the database.
+        // Example: SaveUserToDatabase(username, secureHash);
+    }
+
+    private bool LoginUser(string username, string plaintextPassword)
+    {
+        // 1. Retrieve the stored hash for the 'username' from the database.
+        string storedHash = "INSERT_HASH_FROM_DB_HERE"; // Example: $2a$10$wKxN... (BCrypt format)
+
+        // 2. Verify the plain-text password against the stored hash.
+        return SecurePasswordHasher.VerifyPassword(plaintextPassword, storedHash);
     }
 
     [HttpPost]
@@ -32,6 +52,7 @@ public class HomeController : Controller
             ViewBag.ErrorMessage = "Invalid email format.";
             return View("Error"); // Assuming an Error view exists
         }
+
 
         // 2. Database Interaction (Using Parameterized Query from Step 3)
         // This example shows an insertion, but the principle is the same.
